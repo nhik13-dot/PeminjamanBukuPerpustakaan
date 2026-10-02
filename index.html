@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peminjaman & Pengembalian Buku SMAN 1 Kalibunder</title>
+    <title>Sistem Perpustakaan & Literasi SMAN 1 Kalibunder</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Library QR Code Scanner -->
@@ -15,7 +15,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Background Kuning Muda dengan Gradasi Halus */
         body {
             background: linear-gradient(135deg, #fffde7 0%, #fff59d 50%, #ffee58 100%);
             min-height: 100vh;
@@ -26,13 +25,12 @@
             align-items: center;
         }
 
-        /* Container Card Utama Transparan (Glassmorphism) */
         .container {
             position: relative;
-            background: rgba(255, 255, 255, 0.45); /* Transparan agar watermark terlihat jelas */
+            background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            padding: 30px 25px;
+            padding: 25px 20px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3), 0 4px 10px rgba(0,0,0,0.05);
             width: 100%;
@@ -41,7 +39,7 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        /* Watermark Tag <img> di Tengah */
+        /* Watermark <img> Transparan */
         .watermark-img {
             position: absolute;
             top: 55%;
@@ -49,7 +47,7 @@
             transform: translate(-50%, -50%);
             width: 280px;
             height: auto;
-            opacity: 0.25; /* Tingkat transparansi watermark agar jelas terlihat */
+            opacity: 0.25;
             pointer-events: none;
             z-index: 0;
         }
@@ -59,26 +57,56 @@
             z-index: 1;
         }
 
-        /* Header Title */
+        /* Tab Switcher Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.6);
+            color: #424242;
+            font-weight: 700;
+            font-size: 11px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #fbc02d 0%, #f57f17 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(245, 127, 23, 0.35);
+        }
+
         .header-title {
             text-align: center;
             color: #2c3e50;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             margin-top: 0;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             line-height: 1.4;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 3px solid #fbc02d;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 10px;
             padding-top: 8px;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
 
         label {
@@ -92,42 +120,35 @@
             text-shadow: 0 1px 2px rgba(255,255,255,0.8);
         }
 
-        /* Form Input Dibuat Transparan */
-        input[type="text"], select {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 12px 15px;
             border: 1.5px solid rgba(0, 0, 0, 0.2);
             border-radius: 10px;
             font-size: 14px;
             outline: none;
-            background-color: rgba(255, 255, 255, 0.5); /* Transparan */
+            background-color: rgba(255, 255, 255, 0.5);
             color: #111111;
             font-weight: 600;
             backdrop-filter: blur(4px);
             transition: all 0.3s ease;
         }
 
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
             border-color: #fbc02d;
             background-color: rgba(255, 255, 255, 0.85);
             box-shadow: 0 0 10px rgba(251, 192, 45, 0.4);
         }
 
-        /* Scanner Camera Box Transparan */
         #reader {
             width: 100%;
             border-radius: 12px;
             overflow: hidden;
             border: 2px dashed #fbc02d;
-            background: rgba(255, 255, 255, 0.35); /* Transparan */
+            background: rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(4px);
         }
 
-        #reader video {
-            border-radius: 10px;
-        }
-
-        /* Tombol Transparan Bergradasi */
         .btn-submit {
             width: 100%;
             background: linear-gradient(135deg, rgba(251, 192, 45, 0.9) 0%, rgba(245, 127, 23, 0.9) 100%);
@@ -143,27 +164,19 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            backdrop-filter: blur(4px);
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
             background: linear-gradient(135deg, rgba(251, 192, 45, 1) 0%, rgba(245, 127, 23, 1) 100%);
-            box-shadow: 0 6px 20px rgba(245, 127, 23, 0.4);
-        }
-
-        .btn-submit:active {
-            transform: translateY(0);
         }
 
         .btn-submit:disabled {
             background: rgba(220, 220, 220, 0.7);
             color: #888888;
-            box-shadow: none;
             cursor: not-allowed;
         }
 
-        /* Result Message Box */
         .result-box {
             margin-top: 18px;
             padding: 14px;
@@ -173,7 +186,6 @@
             font-weight: 600;
             white-space: pre-line;
             backdrop-filter: blur(8px);
-            animation: fadeIn 0.4s ease-in-out;
         }
 
         .success {
@@ -188,56 +200,68 @@
             border: 1px solid #ef9a9a;
         }
 
-        .hidden { 
-            display: none; 
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Watermark Menggunakan Sintaks <img> -->
-        <img src="SMA.png" alt="Watermark SMAN 1 Kalibunder" class="watermark-img">
+        <!-- Watermark Logo -->
+        <img src="logo.png" alt="Watermark SMAN 1 Kalibunder" class="watermark-img">
 
         <div class="content">
+            <!-- Navigasi Pilihan Menu -->
+            <div class="tab-nav">
+                <button id="tabPinjam" class="tab-btn active" onclick="switchTab('pinjam_kembali')">Peminjaman & Pengembalian</button>
+                <button id="tabLiterasi" class="tab-btn" onclick="switchTab('literasi')">Keaktifan Literasi</button>
+            </div>
+
             <!-- Judul Utama -->
-            <h1 class="header-title">
+            <h1 id="mainTitle" class="header-title">
                 Peminjaman dan Pengembalian Buku Perpustakaan SMAN 1 Kalibunder
             </h1>
 
-            <!-- 1. Area Scan QR Code -->
+            <!-- AREA SCANNER QR CODE (BERLAKU UNTUK KEDUA MENU) -->
             <div class="form-group">
-                <label>1. Scan QR Code Kartu:</label>
+                <label>1. Scan QR Code Kartu (ID Anggota):</label>
                 <div id="reader"></div>
             </div>
 
-            <!-- ID Anggota (Otomatis Terisi) -->
             <div class="form-group">
-                <label for="idInput">ID Murid (Terisi Otomatis):</label>
+                <label for="idInput">ID Anggota (Terisi Otomatis):</label>
                 <input type="text" id="idInput" placeholder="Hasil scan ID akan muncul di sini..." readonly style="background-color: rgba(230, 230, 230, 0.6); color: #333333;">
             </div>
 
-            <!-- 2. Input Identitas / Judul Buku -->
-            <div class="form-group">
-                <label for="bukuInput">2. Identitas / Judul Buku:</label>
-                <input type="text" id="bukuInput" placeholder="Masukkan judul atau kode buku..." required>
+            <!-- FORM 1: PEMINJAMAN DAN PENGEMBALIAN -->
+            <div id="sectionPinjam">
+                <div class="form-group">
+                    <label for="bukuInput">2. Identitas / Judul Buku:</label>
+                    <input type="text" id="bukuInput" placeholder="Masukkan judul atau kode buku...">
+                </div>
+
+                <div class="form-group">
+                    <label for="aksiSelect">3. Pilih Status Transaksi:</label>
+                    <select id="aksiSelect">
+                        <option value="pinjam">📖 Meminjam Buku</option>
+                        <option value="kembali">🔄 Mengembalikan Buku</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- 3. Status Transaksi -->
-            <div class="form-group">
-                <label for="aksiSelect">3. Pilih Status Transaksi:</label>
-                <select id="aksiSelect">
-                    <option value="pinjam">📖 Meminjam Buku</option>
-                    <option value="kembali">🔄 Mengembalikan Buku</option>
-                </select>
+            <!-- FORM 2: KEAKTIFAN LITERASI -->
+            <div id="sectionLiterasi" class="hidden">
+                <div class="form-group">
+                    <label for="judulLiterasiInput">2. Judul Buku Dibaca:</label>
+                    <input type="text" id="judulLiterasiInput" placeholder="Masukkan judul buku yang dibaca...">
+                </div>
+
+                <div class="form-group">
+                    <label for="halamanInput">3. Jumlah Halaman Dibaca:</label>
+                    <input type="number" id="halamanInput" placeholder="Contoh: 15">
+                </div>
             </div>
 
-            <!-- 4. Tombol Kirim -->
+            <!-- Tombol Kirim Data -->
             <button id="btnKirim" class="btn-submit" onclick="kirimData()">Kirim Data</button>
 
             <!-- Box Pesan Result -->
@@ -249,26 +273,53 @@
         // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKg_SKWVE0XiCRig6CisKamChn9OZLbE8wyuX2htRt3vgLvH3olN6hzu5w8x5L_Q2R/exec";
 
+        let currentMode = "pinjam_kembali"; // "pinjam_kembali" atau "literasi"
+
         function showMessage(msg, className) {
             const res = document.getElementById('result');
             res.className = 'result-box ' + className;
             res.innerText = msg;
         }
 
-        // Event handler saat QR Code berhasil ter-scan
+        // Fungsi berpindah Menu/Tab
+        function switchTab(mode) {
+            currentMode = mode;
+            const tabPinjam = document.getElementById('tabPinjam');
+            const tabLiterasi = document.getElementById('tabLiterasi');
+            const secPinjam = document.getElementById('sectionPinjam');
+            const secLiterasi = document.getElementById('sectionLiterasi');
+            const mainTitle = document.getElementById('mainTitle');
+            const resultBox = document.getElementById('result');
+
+            resultBox.classList.add('hidden');
+
+            if (mode === 'pinjam_kembali') {
+                tabPinjam.classList.add('active');
+                tabLiterasi.classList.remove('active');
+                secPinjam.classList.remove('hidden');
+                secLiterasi.classList.add('hidden');
+                mainTitle.innerText = "Peminjaman dan Pengembalian Buku Perpustakaan SMAN 1 Kalibunder";
+            } else {
+                tabLiterasi.classList.add('active');
+                tabPinjam.classList.remove('active');
+                secLiterasi.classList.remove('hidden');
+                secPinjam.classList.add('hidden');
+                mainTitle.innerText = "Keaktifan Literasi Siswa SMAN 1 Kalibunder";
+            }
+        }
+
+        // Event handler saat QR Code ter-scan
         function onScanSuccess(decodedText) {
             const scannedId = decodedText.trim();
             if (scannedId) {
                 document.getElementById('idInput').value = scannedId;
-                showMessage('✅ QR ID Anggota Berhasil Di-scan!\nSilakan isi Judul Buku & pilih Status, lalu tekan Kirim Data.', 'success');
+                showMessage('✅ QR ID Anggota Berhasil Di-scan!\nSilakan lengkapi formulir lalu tekan Kirim Data.', 'success');
             }
         }
 
-        // Function Kirim Data Ke Google Sheets
+        // Function Kirim Data
         function kirimData() {
             const idAnggota = document.getElementById('idInput').value.trim();
-            const buku = document.getElementById('bukuInput').value.trim();
-            const aksi = document.getElementById('aksiSelect').value;
             const btn = document.getElementById('btnKirim');
 
             if (!idAnggota) {
@@ -276,19 +327,44 @@
                 return;
             }
 
-            if (!buku) {
-                showMessage('⚠️ Harap masukkan Identitas / Judul Buku terlebih dahulu!', 'error');
-                return;
+            let payload = {
+                mode: currentMode,
+                idAnggota: idAnggota
+            };
+
+            // Validasi per Mode
+            if (currentMode === 'pinjam_kembali') {
+                const buku = document.getElementById('bukuInput').value.trim();
+                const aksi = document.getElementById('aksiSelect').value;
+
+                if (!buku) {
+                    showMessage('⚠️ Harap masukkan Identitas / Judul Buku terlebih dahulu!', 'error');
+                    return;
+                }
+
+                payload.buku = buku;
+                payload.aksi = aksi;
+
+            } else if (currentMode === 'literasi') {
+                const judulBuku = document.getElementById('judulLiterasiInput').value.trim();
+                const jumlahHalaman = document.getElementById('halamanInput').value.trim();
+
+                if (!judulBuku) {
+                    showMessage('⚠️ Harap masukkan Judul Buku Dibaca!', 'error');
+                    return;
+                }
+
+                if (!jumlahHalaman) {
+                    showMessage('⚠️ Harap masukkan Jumlah Halaman Dibaca!', 'error');
+                    return;
+                }
+
+                payload.judulBuku = judulBuku;
+                payload.jumlahHalaman = jumlahHalaman;
             }
 
             btn.disabled = true;
             showMessage('⏳ Memproses data ke Google Sheets...', 'success');
-
-            const payload = {
-                idAnggota: idAnggota,
-                buku: buku,
-                aksi: aksi
-            };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -299,13 +375,13 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                const jenisAksi = aksi === 'pinjam' ? 'Peminjaman' : 'Pengembalian';
-                showMessage(`🎉 [${jenisAksi.toUpperCase()} BERHASIL]\nID Anggota: ${idAnggota}\nBuku: ${buku}\n\nData telah berhasil dicatat ke Google Sheets.`, 'success');
+                showMessage(`🎉 [BERHASIL]\nData ${currentMode === 'pinjam_kembali' ? 'Transaksi Buku' : 'Keaktifan Literasi'} telah dicatat ke Google Sheets.`, 'success');
                 
                 // Reset Form
                 document.getElementById('idInput').value = '';
                 document.getElementById('bukuInput').value = '';
-                document.getElementById('aksiSelect').value = 'pinjam';
+                document.getElementById('judulLiterasiInput').value = '';
+                document.getElementById('halamanInput').value = '';
             })
             .catch(err => {
                 showMessage('❌ Gagal mengirim data: ' + err.message, 'error');
