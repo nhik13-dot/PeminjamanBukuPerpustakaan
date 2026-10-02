@@ -39,7 +39,7 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        /* Watermark <img> Transparan */
+        /* Watermark Logo */
         .watermark-img {
             position: absolute;
             top: 55%;
@@ -140,13 +140,35 @@
             box-shadow: 0 0 10px rgba(251, 192, 45, 0.4);
         }
 
+        /* Container Camera Scanner */
         #reader {
             width: 100%;
             border-radius: 12px;
             overflow: hidden;
-            border: 2px dashed #fbc02d;
+            border: 3px solid #fbc02d;
             background: rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(4px);
+            transition: all 0.4s ease;
+        }
+
+        /* ANIMASI SCANNER BERHASIL (Flash Lampu Hijau) */
+        #reader.scan-success-anim {
+            border-color: #2ecc71 !important;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.9);
+            animation: pulseGreen 0.8s ease-in-out;
+        }
+
+        @keyframes pulseGreen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Sembunyikan Pesan Warning Bawaan Library */
+        #reader #html5-qrcode-scan-status, 
+        #reader span[style*="color: red"],
+        #reader div[style*="background-color"] {
+            display: none !important;
         }
 
         .btn-submit {
@@ -207,7 +229,7 @@
 
     <div class="container">
         <!-- Watermark Logo -->
-        <img src="logo.png" alt="Watermark SMAN 1 Kalibunder" class="watermark-img">
+        <img src="SMA.png" alt="Watermark SMAN 1 Kalibunder" class="watermark-img">
 
         <div class="content">
             <!-- Navigasi Pilihan Menu -->
@@ -221,15 +243,16 @@
                 Peminjaman dan Pengembalian Buku Perpustakaan SMAN 1 Kalibunder
             </h1>
 
-            <!-- AREA SCANNER QR CODE (BERLAKU UNTUK KEDUA MENU) -->
+            <!-- AREA SCANNER QR CODE -->
             <div class="form-group">
                 <label>1. Scan QR Code Kartu (ID Anggota):</label>
                 <div id="reader"></div>
             </div>
 
+            <!-- ID Anggota -->
             <div class="form-group">
-                <label for="idInput">ID Anggota (Terisi Otomatis):</label>
-                <input type="text" id="idInput" placeholder="Hasil scan ID akan muncul di sini..." readonly style="background-color: rgba(230, 230, 230, 0.6); color: #333333;">
+                <label for="idInput">ID Anggota (Otomatis / Ketik Manual):</label>
+                <input type="text" id="idInput" placeholder="Hasil scan ID atau ketik di sini...">
             </div>
 
             <!-- FORM 1: PEMINJAMAN DAN PENGEMBALIAN -->
@@ -273,7 +296,71 @@
         // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKg_SKWVE0XiCRig6CisKamChn9OZLbE8wyuX2htRt3vgLvH3olN6hzu5w8x5L_Q2R/exec";
 
-        let currentMode = "pinjam_kembali"; // "pinjam_kembali" atau "literasi"
+        let currentMode = "pinjam_kembali";
+
+        // ==========================================
+        // FITUR EFEK SUARA BEEP (Web Audio API)
+        // ==========================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // 1. Suara Beep BERHASIL (Nada Tinggi & Cerah)
+        function playSuccessSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Nada A5 (Tinggi)
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+            
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        // 2. Suara Beep GAGAL (Dua Nada Rendah Berturut-turut)
+        function playErrorSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(220, audioCtx.currentTime); // Nada Rendah (A3)
+            
+            gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+
+            osc1.start();
+            osc1.stop(audioCtx.currentTime + 0.15);
+
+            // Beep Kedua
+            setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+
+                osc2.type = 'sawtooth';
+                osc2.frequency.setValueAtTime(180, audioCtx.currentTime); // Nada Lebih Rendah
+                
+                gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+
+                osc2.start();
+                osc2.stop(audioCtx.currentTime + 0.25);
+            }, 180);
+        }
 
         function showMessage(msg, className) {
             const res = document.getElementById('result');
@@ -281,7 +368,7 @@
             res.innerText = msg;
         }
 
-        // Fungsi berpindah Menu/Tab
+        // Fungsi berpindah Tab/Menu
         function switchTab(mode) {
             currentMode = mode;
             const tabPinjam = document.getElementById('tabPinjam');
@@ -313,6 +400,15 @@
             const scannedId = decodedText.trim();
             if (scannedId) {
                 document.getElementById('idInput').value = scannedId;
+                
+                // ANIMASI BINGKAI SCANNER TERLIHAT BERHASIL (Flash Hijau)
+                const readerBox = document.getElementById('reader');
+                readerBox.classList.add('scan-success-anim');
+                
+                setTimeout(() => {
+                    readerBox.classList.remove('scan-success-anim');
+                }, 1200);
+
                 showMessage('✅ QR ID Anggota Berhasil Di-scan!\nSilakan lengkapi formulir lalu tekan Kirim Data.', 'success');
             }
         }
@@ -323,7 +419,8 @@
             const btn = document.getElementById('btnKirim');
 
             if (!idAnggota) {
-                showMessage('⚠️ Harap scan QR Code Kartu Anggota terlebih dahulu!', 'error');
+                playErrorSound(); // Suara Beep Gagal
+                showMessage('⚠️ Harap scan QR Code atau ketik ID Anggota terlebih dahulu!', 'error');
                 return;
             }
 
@@ -338,6 +435,7 @@
                 const aksi = document.getElementById('aksiSelect').value;
 
                 if (!buku) {
+                    playErrorSound(); // Suara Beep Gagal
                     showMessage('⚠️ Harap masukkan Identitas / Judul Buku terlebih dahulu!', 'error');
                     return;
                 }
@@ -350,11 +448,13 @@
                 const jumlahHalaman = document.getElementById('halamanInput').value.trim();
 
                 if (!judulBuku) {
+                    playErrorSound(); // Suara Beep Gagal
                     showMessage('⚠️ Harap masukkan Judul Buku Dibaca!', 'error');
                     return;
                 }
 
                 if (!jumlahHalaman) {
+                    playErrorSound(); // Suara Beep Gagal
                     showMessage('⚠️ Harap masukkan Jumlah Halaman Dibaca!', 'error');
                     return;
                 }
@@ -375,6 +475,7 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
+                playSuccessSound(); // Suara Beep BERHASIL
                 showMessage(`🎉 [BERHASIL]\nData ${currentMode === 'pinjam_kembali' ? 'Transaksi Buku' : 'Keaktifan Literasi'} telah dicatat ke Google Sheets.`, 'success');
                 
                 // Reset Form
@@ -384,6 +485,7 @@
                 document.getElementById('halamanInput').value = '';
             })
             .catch(err => {
+                playErrorSound(); // Suara Beep GAGAL
                 showMessage('❌ Gagal mengirim data: ' + err.message, 'error');
             })
             .finally(() => {
